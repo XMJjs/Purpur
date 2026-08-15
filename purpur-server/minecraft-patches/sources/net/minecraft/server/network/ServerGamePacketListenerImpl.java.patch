@@ -1,5 +1,14 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -331,4 +_,9 @@
+         this.tickEndEvent = new io.papermc.paper.event.packet.ClientTickEndEvent(player.getBukkitEntity()); // Paper - add client tick end event
++        this.exchangeTarget = new org.purpurmc.purpur.protocol.syncmatica.exchange.ExchangeTarget(this); // Purpur - Syncmatica Protocol
+         this.playerGameConnection =  new io.papermc.paper.connection.PaperPlayerGameConnection(this); // Paper
+     }
+ 
++    public final org.purpurmc.purpur.protocol.syncmatica.exchange.ExchangeTarget exchangeTarget; // Purpur - Syncmatica Protocol
++
+     // Paper start - configuration phase API
 @@ -354,6 +_,20 @@
      }
      // Paper end - configuration phase API
@@ -206,6 +215,15 @@
      private boolean shouldCheckPlayerMovement(final boolean isFallFlying) {
          if (this.isSingleplayerOwner()) {
              return false;
+@@ -2085,7 +_,7 @@
+                 if (this.player.isWithinBlockInteractionRange(blockPos, 1.0)) {
+                     Vec3 vec3 = location.subtract(Vec3.atCenterOf(blockPos));
+                     double d = 1.0000001;
+-                    if (Math.abs(vec3.x()) < 1.0000001 && Math.abs(vec3.y()) < 1.0000001 && Math.abs(vec3.z()) < 1.0000001) {
++                    if (org.purpurmc.purpur.PurpurConfig.modify.disableDistanceCheckForUseItem ||Math.abs(vec3.x()) < 1.0000001 && Math.abs(vec3.y()) < 1.0000001 && Math.abs(vec3.z()) < 1.0000001) { // Purpur - disableDistanceCheckForUseItem
+                         Direction direction = hitResult.getDirection();
+                         this.player.resetLastActionTime();
+                         int maxY = this.player.level().getMaxY();
 @@ -2229,6 +_,7 @@
  
                  boolean cancelled;

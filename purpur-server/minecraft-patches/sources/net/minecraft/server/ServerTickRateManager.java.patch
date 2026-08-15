@@ -1,0 +1,13 @@
+--- a/net/minecraft/server/ServerTickRateManager.java
++++ b/net/minecraft/server/ServerTickRateManager.java
+@@ -129,4 +_,10 @@
+         player.connection.send(ClientboundTickingStatePacket.from(this));
+         player.connection.send(ClientboundTickingStepPacket.from(this));
+     }
++
++    // Purpur start - servux
++    public long getRemainingSprintTicks() {
++        return remainingSprintTicks;
++    }
++    // Purpur end - servux
+ }

@@ -45,6 +45,13 @@
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
  
+@@ -1027,2 +_,5 @@
+         this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
+         this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
++        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.init(); // Purpur - protocol
++        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handleServerReload(); // Purpur - protocol
+ 
+         int pollCount = 0;
 @@ -1479,6 +_,60 @@
          return true;
      }

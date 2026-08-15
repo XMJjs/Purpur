@@ -1,32 +1,61 @@
 name: Build
+
 on:
-  workflow_dispatch:
-  pull_request:
   push:
     branches:
-      - "ver/**"
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   build:
+    name: Build Purpur (Java 25)
     runs-on: ubuntu-latest
-    if: "!contains(github.event.commits[0].message, '[ci-skip]')"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25 (Temurin)
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
-          cache: 'gradle'
-      - uses: gradle/actions/setup-gradle@v4
+          java-version: '25'
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Configure Git
-        run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
-      - name: Apply Patches
+        run: |
+          git config --global user.email "no-reply@github.com"
+          git config --global user.name "Github Actions"
+
+      - name: Apply patches
         run: ./gradlew applyAllPatches --stacktrace
-      - name: Build
+
+      - name: Build and test
         run: ./gradlew build --stacktrace
-      - name: Rebuild on Failure
+
+      - name: Rebuild on failure (refresh dependencies)
         if: ${{ failure() }}
         run: |
           ./gradlew clean cleanCache --refresh-dependencies
-          ./gradlew applyAllPatches --stacktrace 
+          ./gradlew applyAllPatches --stacktrace
           ./gradlew build --stacktrace
+
+      - name: Upload server artifacts
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: purpur-server
+          path: purpur-server/build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Upload api artifacts
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: purpur-api
+          path: purpur-api/build/libs/*.jar
+          if-no-files-found: error

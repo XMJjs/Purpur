@@ -1,0 +1,19 @@
+--- a/net/minecraft/world/item/StandingAndWallBlockItem.java
++++ b/net/minecraft/world/item/StandingAndWallBlockItem.java
+@@ -26,14 +_,14 @@
+ 
+     @Override
+     protected @Nullable BlockState getPlacementState(BlockPlaceContext context) {
+-        BlockState stateForPlacement = this.wallBlock.getStateForPlacement(context);
++        BlockState stateForPlacement = this.wallBlock.getRealStateForPlacement(context); // Purpur - alternativeBlockPlacement
+         BlockState blockState = null;
+         LevelReader level = context.getLevel();
+         BlockPos clickedPos = context.getClickedPos();
+ 
+         for (Direction direction : context.getNearestLookingDirections()) {
+             if (direction != this.attachmentDirection.getOpposite()) {
+-                BlockState blockState1 = direction == this.attachmentDirection ? this.getBlock().getStateForPlacement(context) : stateForPlacement;
++                BlockState blockState1 = direction == this.attachmentDirection ? this.getBlock().getRealStateForPlacement(context) : stateForPlacement; // Purpur - alternativeBlockPlacement
+                 if (blockState1 != null && this.canPlace(level, blockState1, clickedPos)) {
+                     blockState = blockState1;
+                     break;

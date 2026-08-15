@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecartContainer.java
++++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecartContainer.java
+@@ -65,6 +_,11 @@
+ 
+     @Override
+     public void setChanged() {
++        // Purpur start - pca
++        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncEntityToClient(this);
++        }
++        // Purpur end - pca
+     }
+ 
+     @Override

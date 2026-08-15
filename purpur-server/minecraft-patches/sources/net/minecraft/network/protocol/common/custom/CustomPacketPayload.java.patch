@@ -1,0 +1,26 @@
+--- a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
++++ b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
+@@ -40,13 +_,22 @@
+ 
+             @Override
+             public void encode(B buffer, CustomPacketPayload value) {
++                // Purpur start - protocol core
++                if (value instanceof org.purpurmc.purpur.protocol.core.PurpurCustomPayload payload) {
++                    org.purpurmc.purpur.protocol.core.PurpurProtocolManager.encode(buffer, payload);
++                    return;
++                }
++                // Purpur end - protocol core
+                 this.writeCap(buffer, value.type(), value);
+             }
+ 
+             @Override
+             public CustomPacketPayload decode(B buffer) {
+                 Identifier identifier = buffer.readIdentifier();
+-                return (CustomPacketPayload)this.findCodec(identifier).decode(buffer);
++                // Purpur start - protocol core
++                var payload = org.purpurmc.purpur.protocol.core.PurpurProtocolManager.decode(identifier, buffer);
++                return java.util.Objects.requireNonNullElseGet(payload, () -> this.findCodec(identifier).decode(buffer));
++                // Purpur end - protocol core
+             }
+         };
+     }

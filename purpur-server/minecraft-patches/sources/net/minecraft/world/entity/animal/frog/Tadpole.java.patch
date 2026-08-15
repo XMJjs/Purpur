@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/frog/Tadpole.java
++++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
+@@ -244,7 +_,7 @@
+         }
+     }
+ 
+-    private int getTicksLeftUntilAdult() {
++    public int getTicksLeftUntilAdult() { // Purpur - private -> public (Jade protocol)
+         return Math.max(0, ticksToBeFrog - this.age);
+     }
+ 

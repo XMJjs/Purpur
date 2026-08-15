@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
++++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
+@@ -64,7 +_,7 @@
+     public final AnimationState rollOutAnimationState = new AnimationState();
+     public final AnimationState rollUpAnimationState = new AnimationState();
+     public final AnimationState peekAnimationState = new AnimationState();
+-    private int scuteTime;
++    public int scuteTime; // Purpur - private -> public (Jade protocol)
+     private boolean peekReceivedClient = false;
+ 
+     public Armadillo(EntityType<? extends Animal> type, Level level) {

@@ -9,6 +9,17 @@
      private static final int MIN_TICKS_BEFORE_REENTERING_HIVE = 400;
      private static final int MIN_OCCUPATION_TICKS_NECTAR = 2400;
      public static final int MIN_OCCUPATION_TICKS_NECTARLESS = 600;
+@@ -150,6 +_,11 @@
+             super.setChanged();
+         }
+ 
++        // Purpur start - pca
++        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);
++        }
++        // Purpur end - pca
+         return list;
+     }
 @@ -157,10 +_,32 @@
          return spawned;
      }
@@ -42,3 +53,36 @@
  
      // Paper start - Add EntityBlockStorage clearEntities
      public void clearBees() {
+@@ -207,6 +_,11 @@
+                 this.level.gameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Context.of(bee, this.getBlockState()));
+             }
+ 
++            // Purpur start - pca
++            if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++                org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);
++            }
++            // Purpur end - pca
+             bee.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.ENTER_BLOCK); // CraftBukkit - add Bukkit remove cause
+             super.setChanged();
+         }
+@@ -328,6 +_,11 @@
+                 if (releaseOccupant(level, pos, state, beeData.toOccupant(), null, beeReleaseStatus, savedFlowerPos)) {
+                     flag = true;
+                     iterator.remove();
++                    // Purpur start - pca
++                    if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++                        org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(java.util.Objects.requireNonNull(level.getBlockEntity(pos)));
++                    }
++                    // Purpur end - pca
+                 }
+                 // Paper start - Fix bees aging inside; use exitTickCounter to keep actual bee life
+@@ -359,6 +_,11 @@
+         input.read("bees", BeehiveBlockEntity.Occupant.LIST_CODEC).orElse(List.of()).forEach(this::storeBee);
+         this.savedFlowerPos = input.read("flower_pos", BlockPos.CODEC).orElse(null);
+         this.maxBees = input.getIntOr("Bukkit.MaxEntities", MAX_OCCUPANTS); // Paper - persist max bukkit occupants
++        // Purpur start - pca
++        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);
++        }
++        // Purpur end - pca
+     }

@@ -18,6 +18,12 @@
      }
  
      protected @Nullable BlockState getPlacementState(final BlockPlaceContext context) {
+@@ -147,4 +_,4 @@
+     protected @Nullable BlockState getPlacementState(final BlockPlaceContext context) {
+-        BlockState stateForPlacement = this.getBlock().getStateForPlacement(context);
++        BlockState stateForPlacement = this.getBlock().getRealStateForPlacement(context); // Purpur - alternativeBlockPlacement
+         return stateForPlacement != null && this.canPlace(context, stateForPlacement) ? stateForPlacement : null;
+     }
 @@ -197,6 +_,7 @@
                  }
  

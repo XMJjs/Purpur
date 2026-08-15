@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/item/crafting/SmithingTrimRecipe.java
++++ b/net/minecraft/world/item/crafting/SmithingTrimRecipe.java
+@@ -84,6 +_,12 @@
+         return Optional.of(this.addition);
+     }
+ 
++    // Purpur start
++    public Holder<TrimPattern> pattern() {
++        return pattern;
++    }
++    // Purpur end
++
+     @Override
+     public RecipeSerializer<SmithingTrimRecipe> getSerializer() {
+         return RecipeSerializer.SMITHING_TRIM;

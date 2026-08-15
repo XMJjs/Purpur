@@ -24,6 +24,15 @@
      // Paper start - retain certain values
      public @Nullable String playerBrand;
      public final java.util.Set<String> pluginMessagerChannels;
+@@ -63,2 +_,3 @@
+     public final java.util.Set<String> pluginMessagerChannels;
+     // Paper end - retain certain values
++    public final com.mojang.authlib.GameProfile profile; // Purpur - protocol core
+@@ -75,2 +_,3 @@
+         this.pluginMessagerChannels = cookie.channels();
+         // Paper end
++        this.profile = cookie.gameProfile(); // Purpur - protocol core
+     }
 @@ -104,6 +_,18 @@
          // Paper start - improve keepalives
          long now = System.nanoTime();
@@ -43,6 +52,24 @@
          if (pending != null && pending.challengeId() == packet.getId()) {
              this.keepAlive.pendingKeepAlives.remove(pending);
  
+@@ -150,12 +_,24 @@
+     @Override
+     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
++        // Purpur start - protocol
++        if (packet.payload() instanceof org.purpurmc.purpur.protocol.core.PurpurCustomPayload purpurPayload) {
++            org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handlePayload(org.purpurmc.purpur.protocol.core.ProtocolUtils.createSelector(this), purpurPayload);
++            return;
++        }
++        if (packet.payload() instanceof net.minecraft.network.protocol.common.custom.DiscardedPayload(net.minecraft.resources.Identifier id, byte[] data)) {
++            if (org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handleBytebuf(org.purpurmc.purpur.protocol.core.ProtocolUtils.createSelector(this), id, io.netty.buffer.Unpooled.wrappedBuffer(data))) {
++                return;
++            }
++        }
++        // Purpur end - protocol
++
+         // Paper start
+         if (!(packet.payload() instanceof final net.minecraft.network.protocol.common.custom.DiscardedPayload discardedPayload)) {
+             return;
 @@ -172,6 +_,12 @@
                  return;
              }
@@ -56,6 +83,13 @@
              if (identifier.equals(MINECRAFT_BRAND)) {
                  this.playerBrand = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
              }
+@@ -209,5 +_,6 @@
+         final String channel = new String(data, from, length, java.nio.charset.StandardCharsets.US_ASCII);
+         if (register) {
+             bridge.addChannel(channel);
++            org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handleMinecraftRegister(channel, org.purpurmc.purpur.protocol.core.ProtocolUtils.createSelector(this)); // Purpur - protocol
+         } else {
+             bridge.removeChannel(channel);
 @@ -257,6 +_,23 @@
          Profiler.get().push("keepAlive");
          long now = Util.getMillis();

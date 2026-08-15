@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -753,6 +_,11 @@
+ 
+     public void setLoaded(boolean loaded) {
+         this.loaded = loaded;
++        // Purpur start - bbor
++        if (loaded) {
++            org.purpurmc.purpur.protocol.BBORProtocol.onChunkLoaded(this);
++        }
++        // Purpur end - bbor
+     }
+ 
+     public Level getLevel() {

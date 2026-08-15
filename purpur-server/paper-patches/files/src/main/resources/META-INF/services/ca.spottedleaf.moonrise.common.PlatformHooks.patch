@@ -1,0 +1,5 @@
+--- a/src/main/resources/META-INF/services/ca.spottedleaf.moonrise.common.PlatformHooks
++++ b/src/main/resources/META-INF/services/ca.spottedleaf.moonrise.common.PlatformHooks
+@@ -1 +1 @@
+-ca.spottedleaf.moonrise.paper.PaperHooks
++org.purpurmc.purpur.region.PurpurHooks

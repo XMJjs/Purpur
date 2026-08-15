@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/storage/loot/entries/CompositeEntryBase.java
++++ b/net/minecraft/world/level/storage/loot/entries/CompositeEntryBase.java
+@@ -16,7 +_,7 @@
+             return "Empty children list";
+         }
+     };
+-    protected final List<LootPoolEntryContainer> children;
++    public final List<LootPoolEntryContainer> children; // Purpur - private -> public (Jade protocol)
+     private final ComposableEntryContainer composedChildren;
+ 
+     protected CompositeEntryBase(List<LootPoolEntryContainer> children, List<LootItemCondition> conditions) {

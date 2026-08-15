@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
+@@ -0,0 +_,10 @@
++    // Purpur start - pca
++    @Override
++    public void setChanged() {
++        super.setChanged();
++        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);
++        }
++    }
++    // Purpur end - pca
++

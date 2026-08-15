@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer.java
++++ b/net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer.java
+@@ -14,7 +_,7 @@
+ import net.minecraft.world.level.storage.loot.predicates.ConditionUserBuilder;
+ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+ 
+ public abstract class LootPoolEntryContainer implements ComposableEntryContainer {
+-    protected final List<LootItemCondition> conditions;
++    public final List<LootItemCondition> conditions; // Purpur - private -> public (Jade protocol)
+     private final Predicate<LootContext> compositeCondition;
+ 
+     protected LootPoolEntryContainer(List<LootItemCondition> conditions) {

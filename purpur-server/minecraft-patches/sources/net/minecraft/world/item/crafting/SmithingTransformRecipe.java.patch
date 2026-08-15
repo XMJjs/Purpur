@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
++++ b/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
+@@ -82,6 +_,12 @@
+         );
+     }
+ 
++    // Purpur start - REI
++    public SlotDisplay getResult() {
++        return this.result.display();
++    }
++    // Purpur end - REI
++
+     // CraftBukkit start
+     @Override
+     public org.bukkit.inventory.Recipe toBukkitRecipe(org.bukkit.NamespacedKey id) {

@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/entity/animal/equine/AbstractHorse.java
++++ b/net/minecraft/world/entity/animal/equine/AbstractHorse.java
+@@ -301,6 +_,13 @@
+     public void createInventory() {
+         SimpleContainer simpleContainer = this.inventory;
+         this.inventory = new SimpleContainer(this.getInventorySize(), (org.bukkit.entity.AbstractHorse) this.getBukkitEntity()); // CraftBukkit
++        // Purpur start - pca
++        this.inventory.addListener(inv -> {
++            if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++                org.purpurmc.purpur.protocol.PcaSyncProtocol.syncEntityToClient(this);
++            }
++        });
++        // Purpur end - pca
+         if (simpleContainer != null) {
+             int min = Math.min(simpleContainer.getContainerSize(), this.inventory.getContainerSize());
+ 

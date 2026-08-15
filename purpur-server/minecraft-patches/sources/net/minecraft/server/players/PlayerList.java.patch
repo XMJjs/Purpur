@@ -1,5 +1,12 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
+@@ -244,3 +_,4 @@
+             return;
+         }
+ 
++        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handlePlayerJoin(player);
++
+         final net.kyori.adventure.text.Component jm = playerJoinEvent.joinMessage();
 @@ -312,6 +_,7 @@
              scoreboard.addPlayerToTeam(player.getScoreboardName(), collideRuleTeam);
          }
@@ -15,6 +22,10 @@
 +        org.purpurmc.purpur.task.BossBarTask.removeFromAll(player.getBukkitEntity()); // Purpur - Implement TPSBar
          ServerLevel level = player.level();
          player.awardStat(Stats.LEAVE_GAME);
+         // CraftBukkit start - Quitting must be before we do final save of data, in case plugins need to modify it
+@@ -434,2 +_,3 @@
+         player.awardStat(Stats.LEAVE_GAME);
++        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handlePlayerLeave(player); // Purpur - protocol
          // CraftBukkit start - Quitting must be before we do final save of data, in case plugins need to modify it
 @@ -768,6 +_,20 @@
          }
@@ -54,3 +65,16 @@
          final io.papermc.paper.event.player.PlayerServerFullCheckEvent fullCheckEvent = new io.papermc.paper.event.player.PlayerServerFullCheckEvent(
              new com.destroystokyo.paper.profile.CraftPlayerProfile(nameAndId),
              io.papermc.paper.adventure.PaperAdventure.asAdventure(currentResult.message),
+@@ -1195,3 +_,4 @@
+         //player.connection.send(new ClientboundSetSimulationDistancePacket(io.papermc.paper.FeatureHooks.getSimulationDistance(level))); // Paper - rewrite chunk system
+         // Paper end - view distances
+ 
++        org.purpurmc.purpur.protocol.XaeroMapProtocol.onSendWorldInfo(player); // Purpur - xaero map protocol
++
+         if (level.isRaining()) {
+@@ -1289,3 +_,4 @@
+             serverPlayer.connection.send(clientboundUpdateRecipesPacket);
+             serverPlayer.getRecipeBook().sendInitialRecipeBook(serverPlayer);
+         }
++        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handleDataPackReload(); // Purpur - protocol core
+     }

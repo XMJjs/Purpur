@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/storage/loot/LootPool.java
++++ b/net/minecraft/world/level/storage/loot/LootPool.java
+@@ -37,7 +_,7 @@
+             )
+             .apply(instance, LootPool::new)
+     );
+-    private final List<LootPoolEntryContainer> entries;
++    public final List<LootPoolEntryContainer> entries; // Purpur - private -> public (Jade protocol)
+     private final List<LootItemCondition> conditions;
+     private final Predicate<LootContext> compositeCondition;
+     private final List<LootItemFunction> functions;

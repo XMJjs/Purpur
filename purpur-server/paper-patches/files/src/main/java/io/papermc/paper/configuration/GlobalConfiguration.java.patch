@@ -1,0 +1,11 @@
+--- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+@@ -272,7 +_,7 @@
+             }
+ 
+             public boolean isEnabled() {
+-                return this.interval > 0.0 && this.maxPacketRate > 0.0;
++                return !org.purpurmc.purpur.PurpurConfig.modify.disablePacketLimit && (this.interval > 0.0 && this.maxPacketRate > 0.0); // Purpur - disable packet limit
+             }
+ 
+             public enum ViolateAction {

@@ -25,7 +25,18 @@ import org.bukkit.command.Command;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginManager;
 import org.purpurmc.purpur.command.PurpurCommand;
+import org.purpurmc.purpur.protocol.CarpetServerProtocol.CarpetRule;
+import org.purpurmc.purpur.protocol.CarpetServerProtocol.CarpetRules;
+import org.purpurmc.purpur.protocol.PcaSyncProtocol;
+import org.purpurmc.purpur.protocol.bladeren.BladerenProtocol.PurpurFeature;
+import org.purpurmc.purpur.protocol.bladeren.BladerenProtocol.PurpurFeatureSet;
+import org.purpurmc.purpur.protocol.rei.REIServerProtocol;
+import org.purpurmc.purpur.protocol.servux.logger.DataLogger;
+import org.purpurmc.purpur.protocol.syncmatica.SyncmaticaProtocol;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +89,12 @@ public class PurpurConfig {
         set("config-version", 48);
 
         readConfig(PurpurConfig.class, null);
+
+        // Purpur start - protocol config: ensure placement protocols always bypass the use-item distance check
+        if (protocol.alternativeBlockPlacement != ProtocolConfig.AlternativePlaceType.NONE) {
+            modify.disableDistanceCheckForUseItem = true;
+        }
+        // Purpur end - protocol config
 
         Block.BLOCK_STATE_REGISTRY.forEach(BlockBehaviour.BlockStateBase::initCache);
     }
@@ -617,4 +634,181 @@ public class PurpurConfig {
             startupCommands.add(command);
         });
     }
+
+    // Purpur start - protocol config (ported from Leaves)
+    public static ModifyConfig modify = new ModifyConfig();
+    public static ProtocolConfig protocol = new ProtocolConfig();
+
+    public static class ModifyConfig {
+        public boolean disableDistanceCheckForUseItem = false;
+        public boolean disablePacketLimit = false;
+    }
+
+    private static void modifySettings() {
+        modify.disableDistanceCheckForUseItem = getBoolean("settings.modify.disable-distance-check-for-use-item", modify.disableDistanceCheckForUseItem);
+        modify.disablePacketLimit = getBoolean("settings.modify.disable-packet-limit", modify.disablePacketLimit);
+    }
+
+    public static class ProtocolConfig {
+        public boolean strictMode = false;
+        public CarpetConfig carpet = new CarpetConfig();
+        public BladerenConfig bladeren = new BladerenConfig();
+        public SyncmaticaConfig syncmatica = new SyncmaticaConfig();
+        public PCAConfig pca = new PCAConfig();
+        public AppleSkinConfig appleskin = new AppleSkinConfig();
+        public ServuxConfig servux = new ServuxConfig();
+        public boolean bborProtocol = false;
+        public boolean jadeProtocol = false;
+        public AlternativePlaceType alternativeBlockPlacement = AlternativePlaceType.NONE;
+        public boolean xaeroMapProtocol = false;
+        public int xaeroMapServerID = new java.util.Random().nextInt();
+        public boolean leavesCarpetSupport = false;
+        public boolean reiServerProtocol = false;
+
+        public static class CarpetConfig {
+            public boolean movableAmethyst = true;
+            public boolean creativeNoClip = false;
+            public boolean avoidAnvilTooExpensive = false;
+            public boolean renewableCoral = false;
+        }
+
+        public static class BladerenConfig {
+            public boolean enable = true;
+            public boolean msptSyncProtocol = false;
+            public int msptSyncTickInterval = 20;
+        }
+
+        public static class SyncmaticaConfig {
+            public boolean enable = false;
+            public boolean useQuota = false;
+            public int quotaLimit = 40000000;
+        }
+
+        public static class PCAConfig {
+            public boolean enable = false;
+            public PcaPlayerEntityType syncPlayerEntity = PcaPlayerEntityType.OPS;
+        }
+
+        public enum PcaPlayerEntityType {
+            NOBODY, BOT, OPS, OPS_AND_SELF, EVERYONE
+        }
+
+        public static class AppleSkinConfig {
+            public boolean enable = false;
+            public int syncTickInterval = 20;
+        }
+
+        public static class ServuxConfig {
+            public boolean structureProtocol = false;
+            public boolean entityProtocol = false;
+            public boolean hudMetadataProtocol = false;
+            public boolean hudLoggerProtocol = false;
+            public List<DataLogger.Type> hudEnabledLoggers = List.of(DataLogger.Type.TPS, DataLogger.Type.MOB_CAPS);
+            public int hudUpdateInterval = 1;
+            public boolean hudMetadataShareSeed = true;
+            public LitematicsConfig litematics = new LitematicsConfig();
+        }
+
+        public static class LitematicsConfig {
+            public boolean enable = false;
+            public long maxNbtSize = 2097152L;
+        }
+
+        public enum AlternativePlaceType {
+            NONE, CARPET, CARPET_FIX, LITEMATICA
+        }
+    }
+
+    private static void protocolSection() {
+        protocol.strictMode = getBoolean("settings.protocol.strict-mode", protocol.strictMode);
+
+        // carpet rules exposed through the carpet protocol
+        protocol.carpet.movableAmethyst = getBoolean("settings.protocol.carpet.movable-amethyst", protocol.carpet.movableAmethyst);
+        protocol.carpet.creativeNoClip = getBoolean("settings.protocol.carpet.creative-no-clip", protocol.carpet.creativeNoClip);
+        protocol.carpet.avoidAnvilTooExpensive = getBoolean("settings.protocol.carpet.avoid-anvil-too-expensive", protocol.carpet.avoidAnvilTooExpensive);
+        protocol.carpet.renewableCoral = getBoolean("settings.protocol.carpet.renewable-coral", protocol.carpet.renewableCoral);
+        CarpetRules.register(CarpetRule.of("carpet", "movableAmethyst", protocol.carpet.movableAmethyst));
+        CarpetRules.register(CarpetRule.of("carpet", "creativeNoClip", protocol.carpet.creativeNoClip));
+        CarpetRules.register(CarpetRule.of("pca", "avoidAnvilTooExpensive", protocol.carpet.avoidAnvilTooExpensive));
+        CarpetRules.register(CarpetRule.of("carpet", "renewableCoral", protocol.carpet.renewableCoral));
+
+        protocol.bladeren.enable = getBoolean("settings.protocol.bladeren.protocol", protocol.bladeren.enable);
+        protocol.bladeren.msptSyncTickInterval = getInt("settings.protocol.bladeren.mspt-sync-tick-interval", protocol.bladeren.msptSyncTickInterval);
+        boolean oldMsptSync = protocol.bladeren.msptSyncProtocol;
+        protocol.bladeren.msptSyncProtocol = getBoolean("settings.protocol.bladeren.mspt-sync-protocol", protocol.bladeren.msptSyncProtocol);
+        if (oldMsptSync != protocol.bladeren.msptSyncProtocol) {
+            PurpurFeatureSet.register(PurpurFeature.of("mspt_sync", protocol.bladeren.msptSyncProtocol));
+        }
+
+        boolean oldSyncmatica = protocol.syncmatica.enable;
+        protocol.syncmatica.enable = getBoolean("settings.protocol.syncmatica.enable", protocol.syncmatica.enable);
+        if (oldSyncmatica != protocol.syncmatica.enable) {
+            SyncmaticaProtocol.init(protocol.syncmatica.enable);
+        }
+        protocol.syncmatica.useQuota = getBoolean("settings.protocol.syncmatica.quota", protocol.syncmatica.useQuota);
+        protocol.syncmatica.quotaLimit = getInt("settings.protocol.syncmatica.quota-limit", protocol.syncmatica.quotaLimit);
+
+        boolean oldPca = protocol.pca.enable;
+        protocol.pca.enable = getBoolean("settings.protocol.pca.pca-sync-protocol", protocol.pca.enable);
+        if (oldPca != protocol.pca.enable) {
+            PcaSyncProtocol.onConfigModify(protocol.pca.enable);
+        }
+        protocol.pca.syncPlayerEntity = ProtocolConfig.PcaPlayerEntityType.valueOf(getString("settings.protocol.pca.pca-sync-player-entity", protocol.pca.syncPlayerEntity.name()));
+
+        protocol.appleskin.enable = getBoolean("settings.protocol.appleskin.protocol", protocol.appleskin.enable);
+        protocol.appleskin.syncTickInterval = getInt("settings.protocol.appleskin.sync-tick-interval", protocol.appleskin.syncTickInterval);
+
+        protocol.servux.structureProtocol = getBoolean("settings.protocol.servux.structure-protocol", protocol.servux.structureProtocol);
+        protocol.servux.entityProtocol = getBoolean("settings.protocol.servux.entity-protocol", protocol.servux.entityProtocol);
+        protocol.servux.hudMetadataProtocol = getBoolean("settings.protocol.servux.hud-metadata-protocol", protocol.servux.hudMetadataProtocol);
+        protocol.servux.hudLoggerProtocol = getBoolean("settings.protocol.servux.hud-logger-protocol", protocol.servux.hudLoggerProtocol);
+        protocol.servux.hudUpdateInterval = getInt("settings.protocol.servux.hud-update-interval", protocol.servux.hudUpdateInterval);
+        protocol.servux.hudMetadataShareSeed = getBoolean("settings.protocol.servux.hud-metadata-protocol-share-seed", protocol.servux.hudMetadataShareSeed);
+
+        protocol.servux.hudEnabledLoggers = new ArrayList<>();
+        for (Object obj : getList("settings.protocol.servux.hud-enabled-loggers", List.of("TPS", "MOB_CAPS"))) {
+            DataLogger.Type type = DataLogger.Type.fromStringStatic(obj.toString());
+            if (type != null) {
+                protocol.servux.hudEnabledLoggers.add(type);
+            }
+        }
+
+        boolean oldLitematics = protocol.servux.litematics.enable;
+        protocol.servux.litematics.enable = getBoolean("settings.protocol.servux.litematics.enable", protocol.servux.litematics.enable);
+        if (oldLitematics != protocol.servux.litematics.enable) {
+            PluginManager pluginManager = Bukkit.getServer().getPluginManager();
+            if (protocol.servux.litematics.enable) {
+                if (pluginManager.getPermission("purpur.protocol.litematics") == null) {
+                    pluginManager.addPermission(new Permission("purpur.protocol.litematics", PermissionDefault.OP));
+                }
+            } else {
+                pluginManager.removePermission("purpur.protocol.litematics");
+            }
+        }
+        protocol.servux.litematics.maxNbtSize = getLong("settings.protocol.servux.litematics.max-nbt-size", protocol.servux.litematics.maxNbtSize);
+
+        protocol.bborProtocol = getBoolean("settings.protocol.bbor-protocol", protocol.bborProtocol);
+        protocol.jadeProtocol = getBoolean("settings.protocol.jade-protocol", protocol.jadeProtocol);
+
+        protocol.alternativeBlockPlacement = ProtocolConfig.AlternativePlaceType.valueOf(getString("settings.protocol.alternative-block-placement", protocol.alternativeBlockPlacement.name()));
+        if (protocol.alternativeBlockPlacement != ProtocolConfig.AlternativePlaceType.NONE) {
+            modify.disableDistanceCheckForUseItem = true;
+        }
+
+        protocol.xaeroMapProtocol = getBoolean("settings.protocol.xaero-map-protocol", protocol.xaeroMapProtocol);
+        protocol.xaeroMapServerID = getInt("settings.protocol.xaero-map-server-id", protocol.xaeroMapServerID);
+        protocol.leavesCarpetSupport = getBoolean("settings.protocol.leaves-carpet-support", protocol.leavesCarpetSupport);
+
+        boolean oldRei = protocol.reiServerProtocol;
+        protocol.reiServerProtocol = getBoolean("settings.protocol.rei-server-protocol", protocol.reiServerProtocol);
+        if (oldRei != protocol.reiServerProtocol) {
+            REIServerProtocol.onConfigModify(protocol.reiServerProtocol);
+        }
+    }
+
+    private static long getLong(String path, long def) {
+        config.addDefault(path, def);
+        return config.getLong(path, config.getLong(path));
+    }
+    // Purpur end - protocol config
 }
