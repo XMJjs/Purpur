@@ -5,7 +5,7 @@
      public void setLoaded(final boolean loaded) {
          this.loaded = loaded;
 +        // Purpur start - bbor
-+        if (loaded) {
++        if (loaded && org.purpurmc.purpur.PurpurConfig.protocol.bborProtocol) {
 +            org.purpurmc.purpur.protocol.BBORProtocol.onChunkLoaded(this);
 +        }
 +        // Purpur end - bbor
