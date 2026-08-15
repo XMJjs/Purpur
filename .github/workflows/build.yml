@@ -38,6 +38,9 @@ jobs:
       - name: Build and test
         run: ./gradlew build --stacktrace
 
+      - name: Create Paperclip jar (runnable server launcher)
+        run: ./gradlew createPaperclipJar --stacktrace
+
       - name: Rebuild on failure (refresh dependencies)
         if: ${{ failure() }}
         run: |
@@ -50,7 +53,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: purpur-server
-          path: purpur-server/build/libs/*.jar
+          path: |
+            purpur-server/build/libs/*.jar
+            purpur-server/build/libs/*paperclip*.jar
           if-no-files-found: error
 
       - name: Upload api artifacts
