@@ -19,6 +19,14 @@ jobs:
   build:
     name: Build Purpur (Java 25)
     runs-on: ubuntu-latest
+    env:
+      # settings.gradle.kts reads BUILD_NUMBER to produce the release version
+      # string "26.1.2.build.<N>-stable". Without it the version becomes
+      # "26.1.2.local-SNAPSHOT", whose "local" token breaks many plugins'
+      # version parsers (Images, AuraSkills, HibiscusCommons, ...).
+      # Use github.run_number so every CI build carries a real build number,
+      # matching the version format of official Purpur builds.
+      BUILD_NUMBER: ${{ github.run_number }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
