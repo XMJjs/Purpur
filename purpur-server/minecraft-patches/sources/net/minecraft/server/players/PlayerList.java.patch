@@ -65,8 +65,12 @@
          final io.papermc.paper.event.player.PlayerServerFullCheckEvent fullCheckEvent = new io.papermc.paper.event.player.PlayerServerFullCheckEvent(
              new com.destroystokyo.paper.profile.CraftPlayerProfile(nameAndId),
              io.papermc.paper.adventure.PaperAdventure.asAdventure(currentResult.message),
-@@ -1195,2 +_,3 @@
+@@ -1195,6 +_,7 @@
          player.connection.send(new ClientboundSetDefaultSpawnPositionPacket(level.getRespawnData()));
+         // Paper start - view distances
+         player.connection.send(new ClientboundSetChunkCacheRadiusPacket(io.papermc.paper.FeatureHooks.getViewDistance(level)));
+         player.connection.send(new ClientboundSetSimulationDistancePacket(io.papermc.paper.FeatureHooks.getSimulationDistance(level)));
+         // Paper end - view distances
 +        org.purpurmc.purpur.protocol.XaeroMapProtocol.onSendWorldInfo(player); // Purpur - xaero map protocol
          if (level.isRaining()) {
 @@ -1289,4 +_,5 @@
