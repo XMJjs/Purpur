@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -244,3 +_,4 @@
+@@ -244,4 +_,6 @@
              return;
          }
  
@@ -65,16 +65,13 @@
          final io.papermc.paper.event.player.PlayerServerFullCheckEvent fullCheckEvent = new io.papermc.paper.event.player.PlayerServerFullCheckEvent(
              new com.destroystokyo.paper.profile.CraftPlayerProfile(nameAndId),
              io.papermc.paper.adventure.PaperAdventure.asAdventure(currentResult.message),
-@@ -1195,3 +_,4 @@
-         //player.connection.send(new ClientboundSetSimulationDistancePacket(io.papermc.paper.FeatureHooks.getSimulationDistance(level))); // Paper - rewrite chunk system
-         // Paper end - view distances
- 
+@@ -1195,2 +_,3 @@
+         player.connection.send(new ClientboundSetDefaultSpawnPositionPacket(level.getRespawnData()));
 +        org.purpurmc.purpur.protocol.XaeroMapProtocol.onSendWorldInfo(player); // Purpur - xaero map protocol
-+
          if (level.isRaining()) {
-@@ -1289,3 +_,4 @@
-             serverPlayer.connection.send(clientboundUpdateRecipesPacket);
-             serverPlayer.getRecipeBook().sendInitialRecipeBook(serverPlayer);
+@@ -1289,4 +_,5 @@
+             player.connection.send(recipes);
+             player.getRecipeBook().sendInitialRecipeBook(player);
          }
 +        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handleDataPackReload(); // Purpur - protocol core
      }

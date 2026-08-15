@@ -12,4 +12,4 @@
 +
      @Override
      public RecipeSerializer<SmithingTrimRecipe> getSerializer() {
-         return RecipeSerializer.SMITHING_TRIM;
+         return SERIALIZER;

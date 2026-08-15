@@ -8,4 +8,4 @@
 +    public final List<LootPoolEntryContainer> children; // Purpur - private -> public (Jade protocol)
      private final ComposableEntryContainer composedChildren;
  
-     protected CompositeEntryBase(List<LootPoolEntryContainer> children, List<LootItemCondition> conditions) {
+     protected CompositeEntryBase(final List<LootPoolEntryContainer> children, final List<LootItemCondition> conditions) {

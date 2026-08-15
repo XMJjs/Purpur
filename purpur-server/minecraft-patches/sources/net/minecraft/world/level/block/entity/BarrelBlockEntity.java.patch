@@ -1,6 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
-@@ -0,0 +_,10 @@
+@@ -89,6 +_,16 @@
+         this.items = items;
+     }
+ 
 +    // Purpur start - pca
 +    @Override
 +    public void setChanged() {
@@ -11,3 +14,6 @@
 +    }
 +    // Purpur end - pca
 +
+     @Override
+     protected Component getDefaultName() {
+         return DEFAULT_NAME;

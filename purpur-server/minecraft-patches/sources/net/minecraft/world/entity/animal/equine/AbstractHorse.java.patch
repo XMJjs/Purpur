@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/entity/animal/equine/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/equine/AbstractHorse.java
-@@ -301,6 +_,13 @@
+@@ -300,5 +_,12 @@
      public void createInventory() {
-         SimpleContainer simpleContainer = this.inventory;
+         SimpleContainer old = this.inventory;
          this.inventory = new SimpleContainer(this.getInventorySize(), (org.bukkit.entity.AbstractHorse) this.getBukkitEntity()); // CraftBukkit
 +        // Purpur start - pca
 +        this.inventory.addListener(inv -> {
@@ -11,6 +11,5 @@
 +            }
 +        });
 +        // Purpur end - pca
-         if (simpleContainer != null) {
-             int min = Math.min(simpleContainer.getContainerSize(), this.inventory.getContainerSize());
- 
+         if (old != null) {
+             int max = Math.min(old.getContainerSize(), this.inventory.getContainerSize());

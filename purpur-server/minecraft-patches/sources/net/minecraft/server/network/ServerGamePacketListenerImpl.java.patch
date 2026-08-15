@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -331,4 +_,9 @@
+@@ -331,5 +_,8 @@
          this.tickEndEvent = new io.papermc.paper.event.packet.ClientTickEndEvent(player.getBukkitEntity()); // Paper - add client tick end event
 +        this.exchangeTarget = new org.purpurmc.purpur.protocol.syncmatica.exchange.ExchangeTarget(this); // Purpur - Syncmatica Protocol
          this.playerGameConnection =  new io.papermc.paper.connection.PaperPlayerGameConnection(this); // Paper

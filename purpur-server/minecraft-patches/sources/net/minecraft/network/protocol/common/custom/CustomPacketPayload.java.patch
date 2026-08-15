@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
 +++ b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
-@@ -41,3 +_,7 @@
+@@ -41,3 +_,9 @@
              public void encode(final B output, final CustomPacketPayload value) {
 +                // Purpur start - protocol core
 +                if (value instanceof org.purpurmc.purpur.protocol.core.PurpurCustomPayload payload) {
@@ -10,7 +10,7 @@
 +                // Purpur end - protocol core
                  this.writeCap(output, value.type(), value);
              }
-@@ -45,4 +_,9 @@
+@@ -45,4 +_,7 @@
              public CustomPacketPayload decode(final B input) {
                  Identifier identifier = input.readIdentifier();
 -                return (CustomPacketPayload)this.findCodec(identifier).decode(input);

@@ -2,8 +2,8 @@
 +++ b/net/minecraft/world/entity/npc/villager/AbstractVillager.java
 @@ -49,6 +_,15 @@
          super(type, level);
-         this.setPathfindingMalus(PathType.DANGER_FIRE, 16.0F);
-         this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+         this.setPathfindingMalus(PathType.FIRE_IN_NEIGHBOR, 16.0F);
+         this.setPathfindingMalus(PathType.FIRE, -1.0F);
 +        // Purpur start - pca
 +        if (!this.level().isClientSide()) {
 +            this.inventory.addListener(inventory -> {

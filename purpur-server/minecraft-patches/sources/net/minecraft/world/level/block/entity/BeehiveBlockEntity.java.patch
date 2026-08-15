@@ -9,7 +9,7 @@
      private static final int MIN_TICKS_BEFORE_REENTERING_HIVE = 400;
      private static final int MIN_OCCUPATION_TICKS_NECTAR = 2400;
      public static final int MIN_OCCUPATION_TICKS_NECTARLESS = 600;
-@@ -150,6 +_,11 @@
+@@ -150,5 +_,10 @@
              super.setChanged();
          }
  
@@ -18,7 +18,7 @@
 +            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);
 +        }
 +        // Purpur end - pca
-         return list;
+         return spawned;
      }
 @@ -157,10 +_,32 @@
          return spawned;
@@ -65,21 +65,27 @@
              bee.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.ENTER_BLOCK); // CraftBukkit - add Bukkit remove cause
              super.setChanged();
          }
-@@ -328,6 +_,11 @@
-                 if (releaseOccupant(level, pos, state, beeData.toOccupant(), null, beeReleaseStatus, savedFlowerPos)) {
-                     flag = true;
-                     iterator.remove();
-+                    // Purpur start - pca
-+                    if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
-+                        org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(java.util.Objects.requireNonNull(level.getBlockEntity(pos)));
+@@ -328,5 +_,15 @@
+         this.stored
+             .removeIf(
+-                occupantEntry -> releaseOccupant(this.level, this.worldPosition, state, occupantEntry.toOccupant(), spawned, releaseStatus, this.savedFlowerPos, force) // CraftBukkit - This allows us to bypass the night/rain/emergency check
++                occupantEntry -> {
++                    if (releaseOccupant(this.level, this.worldPosition, state, occupantEntry.toOccupant(), spawned, releaseStatus, this.savedFlowerPos, force)) {
++                        // Purpur start - pca
++                        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++                            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(java.util.Objects.requireNonNull(this.level.getBlockEntity(this.worldPosition)));
++                        }
++                        // Purpur end - pca
++                        return true;
 +                    }
-+                    // Purpur end - pca
-                 }
-                 // Paper start - Fix bees aging inside; use exitTickCounter to keep actual bee life
-@@ -359,6 +_,11 @@
-         input.read("bees", BeehiveBlockEntity.Occupant.LIST_CODEC).orElse(List.of()).forEach(this::storeBee);
-         this.savedFlowerPos = input.read("flower_pos", BlockPos.CODEC).orElse(null);
-         this.maxBees = input.getIntOr("Bukkit.MaxEntities", MAX_OCCUPANTS); // Paper - persist max bukkit occupants
++                    return false;
++                }
+             );
+         if (!spawned.isEmpty()) {
+@@ -359,4 +_,9 @@
+         this.stored.clear();
+         input.<List>read("bees", BeehiveBlockEntity.Occupant.LIST_CODEC).orElse(List.of()).forEach(this::storeBee);
+         this.savedFlowerPos = input.<BlockPos>read("flower_pos", BlockPos.CODEC).orElse(null);
 +        // Purpur start - pca
 +        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
 +            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);

@@ -8,4 +8,4 @@
 +    public int scuteTime; // Purpur - private -> public (Jade protocol)
      private boolean peekReceivedClient = false;
  
-     public Armadillo(EntityType<? extends Animal> type, Level level) {
+     public Armadillo(final EntityType<? extends Animal> type, final Level level) {

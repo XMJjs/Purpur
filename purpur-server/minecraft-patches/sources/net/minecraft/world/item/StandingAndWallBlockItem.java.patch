@@ -3,17 +3,17 @@
 @@ -26,14 +_,14 @@
  
      @Override
-     protected @Nullable BlockState getPlacementState(BlockPlaceContext context) {
--        BlockState stateForPlacement = this.wallBlock.getStateForPlacement(context);
-+        BlockState stateForPlacement = this.wallBlock.getRealStateForPlacement(context); // Purpur - alternativeBlockPlacement
-         BlockState blockState = null;
+     protected @Nullable BlockState getPlacementState(final BlockPlaceContext context) {
+-        BlockState wallState = this.wallBlock.getStateForPlacement(context);
++        BlockState wallState = this.wallBlock.getRealStateForPlacement(context); // Purpur - alternativeBlockPlacement
+         BlockState stateForPlacement = null;
          LevelReader level = context.getLevel();
-         BlockPos clickedPos = context.getClickedPos();
+         BlockPos pos = context.getClickedPos();
  
          for (Direction direction : context.getNearestLookingDirections()) {
              if (direction != this.attachmentDirection.getOpposite()) {
--                BlockState blockState1 = direction == this.attachmentDirection ? this.getBlock().getStateForPlacement(context) : stateForPlacement;
-+                BlockState blockState1 = direction == this.attachmentDirection ? this.getBlock().getRealStateForPlacement(context) : stateForPlacement; // Purpur - alternativeBlockPlacement
-                 if (blockState1 != null && this.canPlace(level, blockState1, clickedPos)) {
-                     blockState = blockState1;
+-                BlockState possibleState = direction == this.attachmentDirection ? this.getBlock().getStateForPlacement(context) : wallState;
++                BlockState possibleState = direction == this.attachmentDirection ? this.getBlock().getRealStateForPlacement(context) : wallState; // Purpur - alternativeBlockPlacement
+                 if (possibleState != null && this.canPlace(level, possibleState, pos)) {
+                     stateForPlacement = possibleState;
                      break;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -123,6 +_,16 @@
+@@ -89,6 +_,16 @@
          this.facing = blockState.getValue(HopperBlock.FACING);
      }
  
@@ -17,15 +17,14 @@
      @Override
      protected Component getDefaultName() {
          return DEFAULT_NAME;
-@@ -199,6 +_,11 @@
-                 if (flag) {
-                     blockEntity.setCooldown(level.spigotConfig.hopperTransfer); // Spigot
-                     setChanged(level, pos, state);
-+                    // Purpur start - pca
-+                    if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
-+                        org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(blockEntity);
-+                    }
-+                    // Purpur end - pca
-                     return true;
-                 }
+@@ -200,5 +_,10 @@
+             if (changed) {
+                 entity.setCooldown(level.spigotConfig.hopperTransfer); // Spigot
+                 setChanged(level, pos, state);
++                // Purpur start - pca
++                if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++                    org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(entity);
++                }
++                // Purpur end - pca
+                 return true;
              }

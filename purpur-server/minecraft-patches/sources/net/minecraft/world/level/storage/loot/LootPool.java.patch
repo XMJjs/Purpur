@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/level/storage/loot/LootPool.java
 @@ -37,7 +_,7 @@
              )
-             .apply(instance, LootPool::new)
+             .apply(i, LootPool::new)
      );
 -    private final List<LootPoolEntryContainer> entries;
 +    public final List<LootPoolEntryContainer> entries; // Purpur - private -> public (Jade protocol)

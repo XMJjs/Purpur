@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
 +++ b/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
-@@ -29,7 +_,7 @@
+@@ -29,11 +_,11 @@
              return "->{inline}";
          }
      };
@@ -8,4 +8,8 @@
 +    public final Either<ResourceKey<LootTable>, LootTable> contents; // Purpur - private -> public (Jade protocol)
  
      private NestedLootTable(
-         Either<ResourceKey<LootTable>, LootTable> contents, int weight, int quality, List<LootItemCondition> conditions, List<LootItemFunction> functions
+         final Either<ResourceKey<LootTable>, LootTable> contents,
+         final int weight,
+         final int quality,
+         final List<LootItemCondition> conditions,
+         final List<LootItemFunction> functions

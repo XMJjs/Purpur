@@ -1,8 +1,19 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -0,0 +_,10 @@
+@@ -94,3 +_,21 @@
+         this.items = items;
+     }
+ 
 +    // Purpur start - pca
 +    @Override
++    public void setChanged() {
++        super.setChanged();
++        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);
++        }
++    }
++    // Purpur end - pca
++     public static void serverTick(final Level level, final BlockPos pos, final BlockState selfState, final BrewingStandBlockEntity entity) {@Override
 +    public void setChanged() {
 +        super.setChanged();
 +        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {

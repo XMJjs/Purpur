@@ -61,8 +61,8 @@
      public static void popResource(final Level level, final BlockPos pos, final ItemStack itemStack) {
          double halfHeight = EntityType.ITEM.getHeight() / 2.0;
          RandomSource random = level.getRandom();
-@@ -489,26 +_,52 @@
-     public void stepOn(final Level level, final BlockPos pos, final BlockState state, final Entity entity) {
+@@ -489,6 +_,32 @@
+     public void stepOn(final Level level, final BlockPos pos, final BlockState onState, final Entity entity) {
      }
  
 +    // Purpur start - alternativeBlockPlacement
@@ -91,7 +91,7 @@
 +    }
 +    // Purpur end - alternativeBlockPlacement
 +
-     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+     public @Nullable BlockState getStateForPlacement(final BlockPlaceContext context) {
          return this.defaultBlockState();
      }
 @@ -548,7 +_,15 @@

@@ -1,7 +1,8 @@
 --- a/net/minecraft/world/level/storage/loot/predicates/CompositeLootItemCondition.java
 +++ b/net/minecraft/world/level/storage/loot/predicates/CompositeLootItemCondition.java
-@@ -12,7 +_,7 @@
+@@ -12,9 +_,9 @@
  import net.minecraft.world.level.storage.loot.LootContext;
+ import net.minecraft.world.level.storage.loot.Validatable;
  import net.minecraft.world.level.storage.loot.ValidationContext;
  
  public abstract class CompositeLootItemCondition implements LootItemCondition {
@@ -9,4 +10,4 @@
 +    public final List<LootItemCondition> terms; // Purpur - private -> public (Jade protocol)
      private final Predicate<LootContext> composedPredicate;
  
-     protected CompositeLootItemCondition(List<LootItemCondition> terms, Predicate<LootContext> composedPredicate) {
+     protected CompositeLootItemCondition(final List<LootItemCondition> terms, final Predicate<LootContext> composedPredicate) {

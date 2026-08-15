@@ -1,6 +1,10 @@
 --- a/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
-@@ -0,0 +_,10 @@
+@@ -201,7 +_,17 @@
+     protected Component getDefaultName() {
+         return DEFAULT_NAME;
+     }
+ 
 +    // Purpur start - pca
 +    @Override
 +    public void setChanged() {
@@ -11,3 +15,6 @@
 +    }
 +    // Purpur end - pca
 +
+     @Override
+     protected void loadAdditional(final ValueInput input) {
+         super.loadAdditional(input);

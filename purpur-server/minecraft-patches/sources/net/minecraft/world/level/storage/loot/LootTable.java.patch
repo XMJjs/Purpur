@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
-@@ -50,7 +_,7 @@
+@@ -50,6 +_,6 @@
      public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, Optional.empty(), List.of(), List.of());
      private final ContextKeySet paramSet;
      private final Optional<Identifier> randomSequence;
@@ -8,4 +8,3 @@
 +    public final List<LootPool> pools; // Purpur - private -> public (Jade protocol)
      private final List<LootItemFunction> functions;
      private final BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
-     public org.bukkit.craftbukkit.CraftLootTable craftLootTable; // CraftBukkit

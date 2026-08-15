@@ -1,6 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
-@@ -0,0 +_,10 @@
+@@ -102,6 +_,16 @@
+         this.items = items;
+     }
+ 
 +    // Purpur start - pca
 +    @Override
 +    public void setChanged() {
@@ -11,3 +14,6 @@
 +    }
 +    // Purpur end - pca
 +
+     @Override
+     protected AbstractContainerMenu createMenu(final int containerId, final Inventory inventory) {
+         return new DispenserMenu(containerId, inventory, this);
