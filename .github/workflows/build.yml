@@ -9,6 +9,12 @@ on:
 permissions:
   contents: write
 
+# Only one continuous-release build at a time: parallel runs would race
+# on deleting/creating the same "continuous" release.
+concurrency:
+  group: continuous-release
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build Purpur (Java 25)
@@ -72,8 +78,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          # Resolve version identifiers
-          MC_VERSION="$(grep '^mcVersion=' gradle.properties | cut -d= -f2)"
+          # Resolve version identifiers.
+          # NOTE: gradle.properties uses "mcVersion = 26.1.2" (spaces around =),
+          # so the grep pattern must tolerate whitespace and the value must be trimmed.
+          MC_VERSION="$(grep -E '^mcVersion[[:space:]]*=' gradle.properties | head -1 | cut -d= -f2 | tr -d '[:space:]')"
+          if [ -z "${MC_VERSION:-}" ]; then
+            echo "::error::mcVersion not found in gradle.properties"
+            exit 1
+          fi
           SHA_SHORT="$(git rev-parse --short HEAD)"
           COMMIT_MSG="$(git log -1 --pretty=%s)"
           # Locate the paperclip (runnable) jar produced by createPaperclipJar
@@ -90,7 +102,9 @@ jobs:
           RELEASE_JAR="purpur-${MC_VERSION}-${SHA_SHORT}-server.jar"
           cp "${PAPERCLIP_JAR}" "${RELEASE_JAR}"
           # Replace the previous continuous release (same tag) so every push updates one release
-          gh release delete continuous --yes --cleanup-tag 2>/dev/null || true
+          if ! gh release delete continuous --yes --cleanup-tag 2>/dev/null; then
+            echo "::warning::No previous 'continuous' release to delete (first run?)"
+          fi
           NOTES=$(printf '%s\n' \
             "**自动构建服务端** — 可直接运行（需要 JDK 25）" \
             "- MC 版本：${MC_VERSION}" \
@@ -103,10 +117,13 @@ jobs:
             "java -jar ${RELEASE_JAR}" \
             "\`\`\`" \
             "首次启动会在线校验/解压 libraries（需网络）。本 Release 为 Continuous（预发布）版，每次推送到 main 自动更新；正式版本请打 \`v*\` tag 发布。")
-          gh release create "continuous" "${RELEASE_JAR}" \
+          if ! gh release create "continuous" "${RELEASE_JAR}" \
             --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
             --title "Purpur ${MC_VERSION} Continuous Build (${SHA_SHORT})" \
             --notes "${NOTES}" \
-            --prerelease
+            --prerelease; then
+            echo "::error::gh release create failed. If the tag 'continuous' already exists, run a fresh push to clean it up."
+            exit 1
+          fi
           echo "::notice::Published ${RELEASE_JAR} to GitHub Releases (tag: continuous)"
