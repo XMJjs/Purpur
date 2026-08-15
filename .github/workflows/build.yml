@@ -7,7 +7,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -65,3 +65,48 @@ jobs:
           name: purpur-api
           path: purpur-api/build/libs/*.jar
           if-no-files-found: error
+
+      - name: Publish runnable server to GitHub Releases
+        if: ${{ success() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Resolve version identifiers
+          MC_VERSION="$(grep '^mcVersion=' gradle.properties | cut -d= -f2)"
+          SHA_SHORT="$(git rev-parse --short HEAD)"
+          COMMIT_MSG="$(git log -1 --pretty=%s)"
+          # Locate the paperclip (runnable) jar produced by createPaperclipJar
+          PAPERCLIP_JAR="$(ls purpur-server/build/libs/*paperclip*.jar 2>/dev/null | head -1 || true)"
+          if [ -z "${PAPERCLIP_JAR:-}" ]; then
+            # Fallback: use the dev bundle if the paperclip jar is not produced
+            PAPERCLIP_JAR="$(ls purpur-server/build/libs/purpur-server-*.jar 2>/dev/null | head -1 || true)"
+          fi
+          if [ -z "${PAPERCLIP_JAR:-}" ]; then
+            echo "::error::No server jar found under purpur-server/build/libs/"
+            exit 1
+          fi
+          # Give the artifact a stable, descriptive name
+          RELEASE_JAR="purpur-${MC_VERSION}-${SHA_SHORT}-server.jar"
+          cp "${PAPERCLIP_JAR}" "${RELEASE_JAR}"
+          # Replace the previous continuous release (same tag) so every push updates one release
+          gh release delete continuous --yes --cleanup-tag 2>/dev/null || true
+          NOTES=$(printf '%s\n' \
+            "**自动构建服务端** — 可直接运行（需要 JDK 25）" \
+            "- MC 版本：${MC_VERSION}" \
+            "- 构建提交：\`${SHA_SHORT}\` — ${COMMIT_MSG}" \
+            "- 构建时间：$(date -u '+%Y-%m-%d %H:%M UTC')" \
+            "- 产物：\`${RELEASE_JAR}\`（paperclip 启动器，含全部依赖）" \
+            "" \
+            "**使用方法**：" \
+            "\`\`\`bash" \
+            "java -jar ${RELEASE_JAR}" \
+            "\`\`\`" \
+            "首次启动会在线校验/解压 libraries（需网络）。本 Release 为 Continuous（预发布）版，每次推送到 main 自动更新；正式版本请打 \`v*\` tag 发布。")
+          gh release create "continuous" "${RELEASE_JAR}" \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --title "Purpur ${MC_VERSION} Continuous Build (${SHA_SHORT})" \
+            --notes "${NOTES}" \
+            --prerelease
+          echo "::notice::Published ${RELEASE_JAR} to GitHub Releases (tag: continuous)"
