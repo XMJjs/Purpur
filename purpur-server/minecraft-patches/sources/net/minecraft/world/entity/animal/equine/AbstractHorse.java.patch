@@ -1,15 +1,16 @@
 --- a/net/minecraft/world/entity/animal/equine/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/equine/AbstractHorse.java
-@@ -300,5 +_,12 @@
+@@ -300,4 +_,12 @@
      public void createInventory() {
          SimpleContainer old = this.inventory;
-         this.inventory = new SimpleContainer(this.getInventorySize(), (org.bukkit.entity.AbstractHorse) this.getBukkitEntity()); // CraftBukkit
-+        // Purpur start - pca
-+        this.inventory.addListener(inv -> {
-+            if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
-+                org.purpurmc.purpur.protocol.PcaSyncProtocol.syncEntityToClient(this);
+-        this.inventory = new SimpleContainer(this.getInventorySize(), (org.bukkit.entity.AbstractHorse) this.getBukkitEntity()); // CraftBukkit
++        this.inventory = new SimpleContainer(this.getInventorySize(), (org.bukkit.entity.AbstractHorse) this.getBukkitEntity()) { // CraftBukkit // Purpur - pca
++            @Override
++            public void setChanged() {
++                super.setChanged();
++                if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++                    org.purpurmc.purpur.protocol.PcaSyncProtocol.syncEntityToClient(AbstractHorse.this);
++                }
 +            }
-+        });
-+        // Purpur end - pca
++        }; // Purpur - pca
          if (old != null) {
-             int max = Math.min(old.getContainerSize(), this.inventory.getContainerSize());

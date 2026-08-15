@@ -24,11 +24,9 @@ import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.component.ProvidesTrimMaterial;
 import net.minecraft.world.item.crafting.FireworkRocketRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.MapCloningRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
-import net.minecraft.world.item.crafting.TippedArrowRecipe;
 import net.minecraft.world.item.crafting.TransmuteRecipe;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
@@ -106,39 +104,6 @@ public abstract class Display {
      * see me.shedaniel.rei.plugin.client.categories.crafting.filler.TippedArrowRecipeFiller#apply
      */
     @NotNull
-    public static Collection<Display> ofTippedArrowRecipe(@NotNull RecipeHolder<TippedArrowRecipe> recipeHolder) {
-        EntryIngredient arrowIngredient = EntryIngredient.of(Items.ARROW);
-        Set<Identifier> registeredPotions = new HashSet<>();
-        List<Display> displays = new ArrayList<>();
-        MinecraftServer.getServer().registryAccess().lookup(Registries.POTION).stream()
-            .flatMap(Registry::listElements)
-            .map(reference -> PotionContents.createItemStack(Items.LINGERING_POTION, reference))
-            .forEach(itemStack -> {
-                PotionContents potion = itemStack.get(DataComponents.POTION_CONTENTS);
-                if (potion == null || potion.potion().isEmpty()) {
-                    return;
-                }
-                if (potion.potion().get().unwrapKey().isPresent() && registeredPotions.add(potion.potion().get().unwrapKey().get().identifier())) {
-                    List<EntryIngredient> input = new ArrayList<>();
-                    for (int i = 0; i < 4; i++) {
-                        input.add(arrowIngredient);
-                    }
-                    input.add(EntryIngredient.of(itemStack));
-                    for (int i = 0; i < 4; i++) {
-                        input.add(arrowIngredient);
-                    }
-                    ItemStack outputStack = new ItemStack(Items.TIPPED_ARROW, 8);
-                    outputStack.set(DataComponents.POTION_CONTENTS, potion);
-                    displays.add(new CustomDisplay(input, List.of(EntryIngredient.of(outputStack)), recipeHolder.id().identifier()));
-                }
-            });
-        return displays;
-    }
-
-    /**
-     * see me.shedaniel.rei.plugin.client.categories.crafting.filler.TippedArrowRecipeFiller#apply
-     */
-    @NotNull
     public static Collection<Display> ofFireworkRocketRecipe(@NotNull RecipeHolder<FireworkRocketRecipe> recipeHolder) {
         EntryIngredient[] inputs = new EntryIngredient[4];
         inputs[0] = EntryIngredient.of(Items.GUNPOWDER);
@@ -151,19 +116,6 @@ public abstract class Display {
             outputs[i].set(DataComponents.FIREWORKS, new Fireworks(i + 1, List.of()));
         }
         return Collections.singleton(new ShapelessDisplay(List.of(inputs), List.of(EntryIngredient.of(outputs)), recipeHolder.id().identifier()));
-    }
-
-    /**
-     * see me.shedaniel.rei.plugin.client.categories.crafting.filler.MapCloningRecipeFiller#apply
-     */
-    @NotNull
-    public static Collection<Display> ofMapCloningRecipe(@NotNull RecipeHolder<MapCloningRecipe> recipeHolder) {
-        return Collections.singleton(
-            new ShapelessDisplay(
-                List.of(EntryIngredient.of(Items.FILLED_MAP), EntryIngredient.of(Items.MAP)),
-                List.of(EntryIngredient.of(new ItemStack(Items.FILLED_MAP, 2))),
-                recipeHolder.id().identifier())
-        );
     }
 
     /**
@@ -210,15 +162,14 @@ public abstract class Display {
     }
 
     private static Optional<Holder<TrimMaterial>> getMaterialFromIngredient(HolderLookup.Provider provider, Holder<Item> item) {
-        ProvidesTrimMaterial providesTrimMaterial = new ItemStack(item).get(DataComponents.PROVIDES_TRIM_MATERIAL);
-        return providesTrimMaterial != null ? providesTrimMaterial.unwrap(provider) : Optional.empty();
+        return Optional.ofNullable(new ItemStack(item).get(DataComponents.PROVIDES_TRIM_MATERIAL));
     }
 
     public static EntryIngredient ofSlotDisplay(SlotDisplay slot) {
         return switch (slot) {
             case SlotDisplay.Empty ignored -> EntryIngredient.empty();
             case SlotDisplay.ItemSlotDisplay s -> EntryIngredient.of(s.item().value());
-            case SlotDisplay.ItemStackSlotDisplay s -> EntryIngredient.of(s.stack());
+            case SlotDisplay.ItemStackSlotDisplay s -> EntryIngredient.of(s.stack().create());
             case SlotDisplay.TagSlotDisplay s -> ofItemTag(s.tag());
             case SlotDisplay.Composite s -> {
                 ArrayList<ItemStack> list = new ArrayList<>();

@@ -1,18 +1,13 @@
 --- a/net/minecraft/world/entity/npc/villager/AbstractVillager.java
 +++ b/net/minecraft/world/entity/npc/villager/AbstractVillager.java
-@@ -49,6 +_,15 @@
-         super(type, level);
-         this.setPathfindingMalus(PathType.FIRE_IN_NEIGHBOR, 16.0F);
-         this.setPathfindingMalus(PathType.FIRE, -1.0F);
-+        // Purpur start - pca
-+        if (!this.level().isClientSide()) {
-+            this.inventory.addListener(inventory -> {
-+                if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
-+                    org.purpurmc.purpur.protocol.PcaSyncProtocol.syncEntityToClient(this);
-+                }
-+            });
+@@ -59,1 +_,9 @@
+-    private final SimpleContainer inventory = new SimpleContainer(8, (org.bukkit.craftbukkit.entity.CraftAbstractVillager) this.getBukkitEntity()); // CraftBukkit - add argument
++    private final SimpleContainer inventory = new SimpleContainer(8, (org.bukkit.craftbukkit.entity.CraftAbstractVillager) this.getBukkitEntity()) { // CraftBukkit - add argument // Purpur - pca
++        @Override
++        public void setChanged() {
++            super.setChanged();
++            if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
++                org.purpurmc.purpur.protocol.PcaSyncProtocol.syncEntityToClient(AbstractVillager.this);
++            }
 +        }
-+        // Purpur end - pca
-     }
- 
-     @Override
++    };

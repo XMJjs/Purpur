@@ -142,22 +142,22 @@ public class ServuxHudDataProtocol implements PurpurProtocol {
         nbt.putString("id", HudDataPayload.CHANNEL.toString());
         nbt.putString("servux", ServuxProtocol.SERVUX_STRING);
 
-        if (level.serverLevelData.isRaining() && level.serverLevelData.getRainTime() > -1) {
-            nbt.putInt("SetRaining", level.serverLevelData.getRainTime());
+        if (level.getWeatherData().isRaining() && level.getWeatherData().getRainTime() > -1) {
+            nbt.putInt("SetRaining", level.getWeatherData().getRainTime());
             nbt.putBoolean("isRaining", true);
         } else {
             nbt.putBoolean("isRaining", false);
         }
 
-        if (level.serverLevelData.isThundering() && level.serverLevelData.getThunderTime() > -1) {
-            nbt.putInt("SetThundering", level.serverLevelData.getThunderTime());
+        if (level.getWeatherData().isThundering() && level.getWeatherData().getThunderTime() > -1) {
+            nbt.putInt("SetThundering", level.getWeatherData().getThunderTime());
             nbt.putBoolean("isThundering", true);
         } else {
             nbt.putBoolean("isThundering", false);
         }
 
-        if (level.serverLevelData.getClearWeatherTime() > -1) {
-            nbt.putInt("SetClear", level.serverLevelData.getClearWeatherTime());
+        if (level.getWeatherData().getClearWeatherTime() > -1) {
+            nbt.putInt("SetClear", level.getWeatherData().getClearWeatherTime());
         }
 
         sendPacket(player, new HudDataPayload(HudDataPayloadType.PACKET_S2C_WEATHER_TICK, nbt));

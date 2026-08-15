@@ -175,7 +175,7 @@ public class ServuxLitematicsProtocol implements PurpurProtocol {
         }
 
         ServerLevel world = player.level();
-        ChunkAccess chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.FULL, false);
+        ChunkAccess chunk = world.getChunk(chunkPos.x(), chunkPos.z(), ChunkStatus.FULL, false);
 
         if (chunk == null) {
             return;
@@ -220,8 +220,8 @@ public class ServuxLitematicsProtocol implements PurpurProtocol {
             output.putString("Task", "BulkEntityReply");
             output.put("TileEntities", tileList);
             output.put("Entities", entityList);
-            output.putInt("chunkX", chunkPos.x);
-            output.putInt("chunkZ", chunkPos.z);
+            output.putInt("chunkX", chunkPos.x());
+            output.putInt("chunkZ", chunkPos.z());
             ServuxProtocol.LOGGER.debug("process bulk entity used: {}ms", System.currentTimeMillis() - timeStart);
 
             ServuxLitematicaPayload send = new ServuxLitematicaPayload(ServuxLitematicaPayloadType.PACKET_S2C_NBT_RESPONSE_START);

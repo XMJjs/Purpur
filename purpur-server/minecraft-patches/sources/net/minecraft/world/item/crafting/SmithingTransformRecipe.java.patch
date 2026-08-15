@@ -6,7 +6,7 @@
  
 +    // Purpur start - REI
 +    public SlotDisplay getResult() {
-+        return this.result.display();
++        return new SlotDisplay.ItemStackSlotDisplay(this.result);
 +    }
 +    // Purpur end - REI
 +
