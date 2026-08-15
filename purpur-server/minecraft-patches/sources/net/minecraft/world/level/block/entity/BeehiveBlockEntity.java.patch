@@ -82,10 +82,11 @@
 +                }
              );
          if (!spawned.isEmpty()) {
-@@ -359,4 +_,9 @@
-         this.stored.clear();
-         input.<List>read("bees", BeehiveBlockEntity.Occupant.LIST_CODEC).orElse(List.of()).forEach(this::storeBee);
-         this.savedFlowerPos = input.<BlockPos>read("flower_pos", BlockPos.CODEC).orElse(null);
+@@ -359,5 +_,10 @@
+         this.stored = Lists.newArrayList(); // CraftBukkit - SPIGOT-7790: create new copy (may be modified in physics event triggered by honey change)
+         input.read("bees", BeehiveBlockEntity.Occupant.LIST_CODEC).orElse(List.of()).forEach(this::storeBee);
+         this.savedFlowerPos = input.read("flower_pos", BlockPos.CODEC).orElse(null);
+         this.maxBees = input.getIntOr("Bukkit.MaxEntities", MAX_OCCUPANTS); // Paper - persist max bukkit occupants
 +        // Purpur start - pca
 +        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
 +            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);

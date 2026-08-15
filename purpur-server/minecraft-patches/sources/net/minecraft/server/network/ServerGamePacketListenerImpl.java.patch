@@ -216,14 +216,14 @@
          if (this.isSingleplayerOwner()) {
              return false;
 @@ -2085,7 +_,7 @@
-                 if (this.player.isWithinBlockInteractionRange(blockPos, 1.0)) {
-                     Vec3 vec3 = location.subtract(Vec3.atCenterOf(blockPos));
-                     double d = 1.0000001;
--                    if (Math.abs(vec3.x()) < 1.0000001 && Math.abs(vec3.y()) < 1.0000001 && Math.abs(vec3.z()) < 1.0000001) {
-+                    if (org.purpurmc.purpur.PurpurConfig.modify.disableDistanceCheckForUseItem ||Math.abs(vec3.x()) < 1.0000001 && Math.abs(vec3.y()) < 1.0000001 && Math.abs(vec3.z()) < 1.0000001) { // Purpur - disableDistanceCheckForUseItem
-                         Direction direction = hitResult.getDirection();
+                 if (this.player.isWithinBlockInteractionRange(pos, 1.0)) {
+                     Vec3 distance = location.subtract(Vec3.atCenterOf(pos));
+                     double limit = 1.0000001;
+-                    if (Math.abs(distance.x()) < 1.0000001 && Math.abs(distance.y()) < 1.0000001 && Math.abs(distance.z()) < 1.0000001) {
++                    if (org.purpurmc.purpur.PurpurConfig.modify.disableDistanceCheckForUseItem || Math.abs(distance.x()) < 1.0000001 && Math.abs(distance.y()) < 1.0000001 && Math.abs(distance.z()) < 1.0000001) { // Purpur - disableDistanceCheckForUseItem
+                         Direction direction = blockHit.getDirection();
                          this.player.resetLastActionTime();
-                         int maxY = this.player.level().getMaxY();
+                         int maxY = level.getMaxY();
 @@ -2229,6 +_,7 @@
  
                  boolean cancelled;
