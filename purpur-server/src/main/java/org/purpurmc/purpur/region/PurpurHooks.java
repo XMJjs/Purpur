@@ -247,7 +247,7 @@ public final class PurpurHooks extends BaseChunkSystemHooks implements PlatformH
     @Override
     public void postLoadProtoChunk(final ServerLevel world, final ProtoChunk chunk) {
         try (final net.minecraft.util.ProblemReporter.ScopedCollector scopedCollector = new net.minecraft.util.ProblemReporter.ScopedCollector(chunk.problemPath(), LOGGER)) {
-            net.minecraft.world.level.chunk.status.ChunkStatusTasks.postLoadProtoChunk(world, net.minecraft.world.level.storage.TagValueInput.create(scopedCollector, world.registryAccess(), chunk.getEntities()));
+            net.minecraft.world.level.chunk.status.ChunkStatusTasks.postLoadProtoChunk(world, net.minecraft.world.level.storage.TagValueInput.create(scopedCollector, world.registryAccess(), chunk.getEntities()), chunk.getPos());
         }
     }
 
