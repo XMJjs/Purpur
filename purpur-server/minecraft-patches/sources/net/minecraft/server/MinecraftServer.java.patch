@@ -86,13 +86,12 @@
                      // adjust ticksBehind so that it is not greater-than catchup
                      if (ticksBehind - catchup > 0L) {
                          final long difference = ticksBehind - catchup;
-@@ -1842,5 +_,8 @@
-         profilerFiller.popPush("server gui refresh");
+@@ -1842,4 +_,5 @@
+         profiler.popPush("server gui refresh");
++        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handleTick(this.tickCount); // Purpur - protocol
  
-+        org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handleTick(tickCount); // Purpur - protocol
-+
-         for (Runnable runnable : this.tickables) {
-             runnable.run();
+         for (Runnable tickable : this.tickables) {
+             tickable.run();
          }
 @@ -1973,7 +_,7 @@
      }

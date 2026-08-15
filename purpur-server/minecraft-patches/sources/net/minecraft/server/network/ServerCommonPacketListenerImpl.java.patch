@@ -28,8 +28,9 @@
      public final java.util.Set<String> pluginMessagerChannels;
      // Paper end - retain certain values
 +    public final com.mojang.authlib.GameProfile profile; // Purpur - protocol core
-@@ -75,2 +_,3 @@
+@@ -75,3 +_,4 @@
          this.pluginMessagerChannels = cookie.channels();
+         this.keepAlive = cookie.keepAlive();
          // Paper end
 +        this.profile = cookie.gameProfile(); // Purpur - protocol core
      }
@@ -52,9 +53,9 @@
          if (pending != null && pending.challengeId() == packet.getId()) {
              this.keepAlive.pendingKeepAlives.remove(pending);
  
-@@ -150,12 +_,24 @@
+@@ -150,13 +_,26 @@
      @Override
-     public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
+     public void handleCustomPayload(final ServerboundCustomPayloadPacket packet) {
 +        // Purpur start - protocol
 +        if (packet.payload() instanceof org.purpurmc.purpur.protocol.core.PurpurCustomPayload purpurPayload) {
 +            org.purpurmc.purpur.protocol.core.PurpurProtocolManager.handlePayload(org.purpurmc.purpur.protocol.core.ProtocolUtils.createSelector(this), purpurPayload);
