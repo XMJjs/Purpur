@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/ComparatorBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ComparatorBlockEntity.java
-@@ -25,3 +_,21 @@
+@@ -24,6 +_,16 @@
          this.output = input.getIntOr("OutputSignal", 0);
      }
  
@@ -13,12 +13,7 @@
 +        }
 +    }
 +    // Purpur end - pca
-+     public int getOutputSignal() {@Override
-+    public void setChanged() {
-+        super.setChanged();
-+        if (org.purpurmc.purpur.PurpurConfig.protocol.pca.enable) {
-+            org.purpurmc.purpur.protocol.PcaSyncProtocol.syncBlockEntityToClient(this);
-+        }
-+    }
-+    // Purpur end - pca
 +
+     public int getOutputSignal() {
+         return this.output;
+     }
